@@ -1,4 +1,3 @@
-// src/components/resultBar.jsx
 import React from 'react';
 
 export default function ResultsBar({ 
@@ -40,9 +39,13 @@ export default function ResultsBar({
         return (
           <li key={i} className={listClass}>
             <div className={barClass} style={{ width: `${pct}%` }} />
-            <span className="label">{opt}</span>
-            <span className="pct">{pct}%</span>
-            {statusText && <span className="status-badge">{statusText}</span>}
+            <div className="result-content">
+              <span className="label">{opt}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="pct">{pct}%</span>
+                {statusText && <span className="status-badge">{statusText}</span>}
+              </div>
+            </div>
           </li>
         );
       })}

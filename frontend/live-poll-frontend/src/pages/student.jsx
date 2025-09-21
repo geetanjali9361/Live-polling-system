@@ -1,7 +1,6 @@
-// src/pages/student.jsx
 import React, { useEffect, useState } from 'react';
 import { usePoll } from '../context/pollContext';
-import { socket } from '../context/pollContext'; // use the SAME socket
+import { socket } from '../context/pollContext';
 import Timer from '../components/timer';
 import ResultsBar from '../components/resultsBar';
 import TabbedSidebar from '../components/tabbedSidebar.jsx';
@@ -10,12 +9,12 @@ export default function Student() {
   const { name, setName, joined, poll, activeQ, endsAt, counts, joinAsStudent, currentQuestion } = usePoll();
   const [selected, setSelected] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [myAnswer, setMyAnswer] = useState(null); // Track what the student answered
+  const [myAnswer, setMyAnswer] = useState(null);
 
   useEffect(() => { 
     setSubmitted(false); 
     setSelected(null); 
-    setMyAnswer(null); // Reset when new question starts
+    setMyAnswer(null);
   }, [activeQ]);
 
   const join = async () => {
@@ -23,17 +22,27 @@ export default function Student() {
     if (!ack?.ok) alert(ack?.msg || 'Join failed');
   };
 
-  // show join form until actually joined
   if (!joined) {
     return (
       <div className="page">
-        <h2>Let's Get Started</h2>
-        <input
-          placeholder="Enter your name"
-          value={name}
-          onChange={e=>setName(e.target.value)}
-        />
-        <button className="primary" onClick={join}>Continue</button>
+        <div className="container">
+          <div className="header-badge">Interactive Poll</div>
+          
+          <h2>Let's Get Started</h2>
+          <p className="subtitle">If you're a student, you'll be able to submit your answers, participate in live polls, and see how your responses compare with your classmates</p>
+          
+          <div className="form-group">
+            <label>Enter your Name</label>
+            <input
+              placeholder="Enter your name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              className="form-control"
+            />
+          </div>
+          
+          <button className="primary" onClick={join}>Continue</button>
+        </div>
       </div>
     );
   }
@@ -41,54 +50,61 @@ export default function Student() {
   if (!poll && !currentQuestion) {
     return (
       <div className="page center">
-        <h3>Wait for the teacher to ask questions…</h3>
+        <div className="container">
+          <div className="header-badge">Interactive Poll</div>
+          <div className="loading-spinner"></div>
+          <h3>Wait for the teacher to ask questions...</h3>
+        </div>
       </div>
     );
   }
 
-  // Use currentQuestion if available, fallback to poll question
   const q = currentQuestion || poll?.questions?.[0];
 
   const submit = () => {
     if (activeQ == null || selected == null) return;
-    socket.emit('student:answer', { questionId: activeQ, optionIndex: selected }, (ack)=>{
+    socket.emit('student:answer', { questionId: activeQ, optionIndex: selected }, (ack) => {
       if (!ack?.ok) return alert(ack?.msg || 'Submit failed');
       setSubmitted(true);
-      setMyAnswer(selected); // Remember what they answered
+      setMyAnswer(selected);
     });
   };
 
   return (
-    <div className="page two-col">
+    <div className="two-col">
       <div className="left">
+        <div className="header-badge">Interactive Poll</div>
+        
         {activeQ ? (
           <>
             <div className="row">
               <h3>Question 1</h3>
               <Timer endsAt={endsAt} />
             </div>
-            <h2>{q?.text}</h2>
-
+            <div className="question-text">{q?.text}</div>
+            
             {!submitted ? (
               <>
                 <ul className="options">
-                  {q?.options?.map((opt,i)=>(
+                  {q?.options?.map((opt,i) => (
                     <li key={i} className="option">
-                      <div className="choice">
-                        <label>
-                          <input
-                            type="radio"
-                            name="opt"
-                            checked={selected===i}
-                            onChange={()=>setSelected(i)}
-                          />
-                          {opt}
-                        </label>
-                      </div>
+                      <button
+                        className={`option-button ${selected === i ? 'selected' : ''}`}
+                        onClick={() => setSelected(i)}
+                      >
+                        <input
+                          type="radio"
+                          name="opt"
+                          checked={selected === i}
+                          onChange={() => setSelected(i)}
+                          className="option-radio"
+                        />
+                        <span>{opt}</span>
+                      </button>
                     </li>
                   ))}
                 </ul>
-                <button className="primary" disabled={!joined || selected==null} onClick={submit}>
+                <button className="primary" disabled={!joined || selected == null} onClick={submit}>
                   Submit
                 </button>
               </>
@@ -100,7 +116,7 @@ export default function Student() {
                   correctIndex={q?.correctIndex}
                   myAnswer={myAnswer}
                 />
-                <p>Wait for the teacher to ask a new question.</p>
+                <p className="waiting-message">Wait for the teacher to ask a new question.</p>
               </>
             )}
           </>
@@ -112,11 +128,11 @@ export default function Student() {
               correctIndex={q?.correctIndex}
               myAnswer={myAnswer}
             />
-            <p>Wait for the teacher to ask a new question..</p>
+            <p className="waiting-message">Wait for the teacher to ask a new question..</p>
           </>
         )}
       </div>
-
+      
       <div className="right">
         <TabbedSidebar />
       </div>

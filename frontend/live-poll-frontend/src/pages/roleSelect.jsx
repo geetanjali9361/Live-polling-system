@@ -7,22 +7,33 @@ export default function RoleSelect({ onContinue }) {
 
   return (
     <div className="page">
-      <h1>Welcome to the <b>Live Polling System</b></h1>
-      <div className="cards">
-        <button
-          className={`card ${tempRole==='student'?'active':''}`}
-          onClick={() => setTempRole('student')}
-        >I’m a Student</button>
-
-        <button
-          className={`card ${tempRole==='teacher'?'active':''}`}
-          onClick={() => setTempRole('teacher')}
-        >I’m a Teacher</button>
+      <div className="container">
+        <div className="header-badge">Interactive Poll</div>
+        
+        <h1>Welcome to the <strong>Live Polling System</strong></h1>
+        <p className="subtitle">Please select the role that best describes you to begin using the live polling system.</p>
+        
+        <div className="cards">
+          <button
+            className={`card ${tempRole === 'student' ? 'active' : ''}`}
+            onClick={() => setTempRole('student')}
+          >
+            <h3>I'm a Student</h3>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+          </button>
+          <button
+            className={`card ${tempRole === 'teacher' ? 'active' : ''}`}
+            onClick={() => setTempRole('teacher')}
+          >
+            <h3>I'm a Teacher</h3>
+            <p>Submit answers and view live poll results in real-time</p>
+          </button>
+        </div>
+        
+        <button className="primary" onClick={() => { setRole(tempRole); onContinue(); }}>
+          Continue
+        </button>
       </div>
-
-      <button className="primary" onClick={() => { setRole(tempRole); onContinue(); }}>
-        Continue
-      </button>
     </div>
   );
 }

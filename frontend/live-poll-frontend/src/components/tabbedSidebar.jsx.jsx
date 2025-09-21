@@ -1,4 +1,3 @@
-// src/components/TabbedSidebar.jsx
 import React, { useState } from 'react';
 import { usePoll } from '../context/pollContext';
 import ChatWidget from './chatWidget';
@@ -9,7 +8,6 @@ export default function TabbedSidebar() {
 
   return (
     <div className="tabbed-sidebar">
-      {/* Tab Headers */}
       <div className="tab-headers">
         <button 
           className={`tab-header ${activeTab === 'chat' ? 'active' : ''}`}
@@ -25,7 +23,6 @@ export default function TabbedSidebar() {
         </button>
       </div>
 
-      {/* Tab Content */}
       <div className="tab-content">
         {activeTab === 'chat' ? (
           <ChatWidget />

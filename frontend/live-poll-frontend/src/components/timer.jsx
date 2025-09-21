@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 export default function Timer({ endsAt }) {
   const [sec, setSec] = useState(0);
+  
   useEffect(() => {
     const tick = () => {
       if (!endsAt) return setSec(0);
@@ -12,5 +13,10 @@ export default function Timer({ endsAt }) {
     const t = setInterval(tick, 200);
     return () => clearInterval(t);
   }, [endsAt]);
-  return <span>🕒 {String(sec).padStart(2,'0')}s</span>;
+  
+  return (
+    <div className="timer">
+      ⏰ {String(Math.floor(sec / 60)).padStart(2,'0')}:{String(sec % 60).padStart(2,'0')}
+    </div>
+  );
 }
