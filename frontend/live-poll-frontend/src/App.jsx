@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PollProvider, { usePoll } from './context/pollContext';
-import RoleSelect from './pages/RoleSelect';
+import RoleSelect from './pages/roleSelect';
 import Teacher from './pages/teacher';
 import Student from './pages/student';
 import './style.css';
