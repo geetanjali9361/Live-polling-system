@@ -4,7 +4,7 @@ import { usePoll } from '../context/pollContext';
 import { socket } from '../context/pollContext'; // use the SAME socket
 import Timer from '../components/timer';
 import ResultsBar from '../components/resultsBar';
-import ChatWidget from '../components/chatWidget';
+import TabbedSidebar from '../components/tabbedSidebar.jsx';
 
 export default function Student() {
   const { name, setName, joined, poll, activeQ, endsAt, counts, joinAsStudent, currentQuestion } = usePoll();
@@ -118,7 +118,7 @@ export default function Student() {
       </div>
 
       <div className="right">
-        <ChatWidget />
+        <TabbedSidebar />
       </div>
     </div>
   );

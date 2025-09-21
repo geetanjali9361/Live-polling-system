@@ -5,8 +5,7 @@ import { socket } from '../context/pollContext';
 import Timer from '../components/timer';
 import ResultsBar from '../components/resultsBar';
 import QuestionForm from '../components/questionForm';
-import RosterPanel from '../components/rosterPanel';
-import ChatWidget from '../components/chatWidget';
+import TabbedSidebar from '../components/tabbedSidebar.jsx';
 
 export default function Teacher() {
   const { poll, activeQ, endsAt, counts, startQuestion, setPoll, currentQuestion } = usePoll();
@@ -69,8 +68,7 @@ export default function Teacher() {
       </div>
 
       <div className="right">
-        <RosterPanel />
-        <ChatWidget />
+        <TabbedSidebar />
       </div>
     </div>
   );
