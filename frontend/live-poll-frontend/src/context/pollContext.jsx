@@ -22,6 +22,8 @@ export default function PollProvider({ children }) {
   const [counts, setCounts] = useState([]);    // live results
   const [roster, setRoster] = useState([]);    // connected students
   const [chat, setChat] = useState([]);        // chat log
+  const [kickedOut, setKickedOut] = useState(false);
+
 
   // NEW: the currently running question payload (text/options/correctIndex if present)
   const [currentQuestion, setCurrentQuestion] = useState(null);
@@ -69,6 +71,10 @@ export default function PollProvider({ children }) {
       setCounts([]);
       setCurrentQuestion(null);
     });
+
+    socket.on('student:removed', () => {
+  setKickedOut(true); // Set kicked out state instead of alert + reload
+});
 
     socket.on('question:started', ({ questionId, text, options, correctIndex, endsAt }) => {
       setActiveQ(questionId);
@@ -175,7 +181,7 @@ export default function PollProvider({ children }) {
     poll, setPoll, activeQ, endsAt, counts, roster, chat,
     currentQuestion, setCurrentQuestion,
     joinAsStudent, startQuestion, endQuestion, removeStudent, sendChat,
-    createPoll, fetchLatest, fetchHistory,
+    createPoll, fetchLatest, fetchHistory,kickedOut, setKickedOut,
   };
 
   return <PollCtx.Provider value={value}>{children}</PollCtx.Provider>;

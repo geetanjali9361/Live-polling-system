@@ -6,7 +6,7 @@ import ResultsBar from '../components/resultsBar';
 import TabbedSidebar from '../components/tabbedSidebar.jsx';
 
 export default function Student() {
-  const { name, setName, joined, poll, activeQ, endsAt, counts, joinAsStudent, currentQuestion } = usePoll();
+  const { name, setName, joined, poll, activeQ, endsAt, counts, joinAsStudent, currentQuestion,kickedOut } = usePoll();
   const [selected, setSelected] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [myAnswer, setMyAnswer] = useState(null);
@@ -21,7 +21,18 @@ export default function Student() {
     const ack = await joinAsStudent((name || '').trim());
     if (!ack?.ok) alert(ack?.msg || 'Join failed');
   };
-
+if (kickedOut) {
+    return (
+      <div className="page">
+        <div className="container">
+          <div className="header-badge">Interactive Poll</div>
+          
+          <h2>You've been Kicked out !</h2>
+          <p>Looks like the teacher has removed you from the poll system. Please try again sometime.</p>
+        </div>
+      </div>
+    );
+  }
   if (!joined) {
     return (
       <div className="page">
