@@ -24,15 +24,17 @@ export default function PollProvider({ children }) {
   const [chat, setChat] = useState([]);        // chat log
   const [kickedOut, setKickedOut] = useState(false);
 
-
   // NEW: the currently running question payload (text/options/correctIndex if present)
   const [currentQuestion, setCurrentQuestion] = useState(null);
 
   // -------- Refs for auto-rejoin --------
   const roleRef = useRef(role);
   const nameRef = useRef(name);
+  const kickedOutRef = useRef(false); // Add ref to track kicked out state
+  
   useEffect(() => { roleRef.current = role; }, [role]);
   useEffect(() => { nameRef.current = name; }, [name]);
+  useEffect(() => { kickedOutRef.current = kickedOut; }, [kickedOut]); // Update ref
 
   // -------- Socket listeners --------
   useEffect(() => {
@@ -53,8 +55,8 @@ export default function PollProvider({ children }) {
     };
 
     const onConnect = () => {
-      // Auto re-join student if page reloads
-      if (roleRef.current === 'student' && nameRef.current) {
+      // Only auto re-join student if page reloads AND they weren't kicked out
+      if (roleRef.current === 'student' && nameRef.current && !kickedOutRef.current) {
         socket.emit('student:join', { name: nameRef.current }, (ack) => {
           if (ack?.ok) setJoined(true);
         });
@@ -73,8 +75,15 @@ export default function PollProvider({ children }) {
     });
 
     socket.on('student:removed', () => {
-  setKickedOut(true); // Set kicked out state instead of alert + reload
-});
+      setKickedOut(true); // Set kicked out state
+      setJoined(false); // Also set joined to false
+      // Clear other state to prevent any UI confusion
+      setPoll(null);
+      setActiveQ(null);
+      setEndsAt(null);
+      setCounts([]);
+      setCurrentQuestion(null);
+    });
 
     socket.on('question:started', ({ questionId, text, options, correctIndex, endsAt }) => {
       setActiveQ(questionId);
@@ -115,10 +124,6 @@ export default function PollProvider({ children }) {
 
     socket.on('room:roster', ({ roster }) => setRoster(roster));
     socket.on('chat:new', msg => setChat(prev => [...prev, msg]));
-    socket.on('student:removed', () => {
-      alert("You've been kicked out by the teacher.");
-      window.location.reload();
-    });
 
     socket.on('poll:cleared', () => {
       setPoll(null);
@@ -136,8 +141,14 @@ export default function PollProvider({ children }) {
   // -------- Helpers --------
   const joinAsStudent = (studentName) =>
     new Promise((resolve) => {
+      // Reset kicked out state when manually joining
+      setKickedOut(false);
       socket.emit('student:join', { name: studentName }, (ack) => {
-        if (ack?.ok) { setRole('student'); setName(studentName); setJoined(true); }
+        if (ack?.ok) { 
+          setRole('student'); 
+          setName(studentName); 
+          setJoined(true); 
+        }
         resolve(ack);
       });
     });
@@ -181,7 +192,7 @@ export default function PollProvider({ children }) {
     poll, setPoll, activeQ, endsAt, counts, roster, chat,
     currentQuestion, setCurrentQuestion,
     joinAsStudent, startQuestion, endQuestion, removeStudent, sendChat,
-    createPoll, fetchLatest, fetchHistory,kickedOut, setKickedOut,
+    createPoll, fetchLatest, fetchHistory, kickedOut, setKickedOut,
   };
 
   return <PollCtx.Provider value={value}>{children}</PollCtx.Provider>;
