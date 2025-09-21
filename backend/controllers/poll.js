@@ -57,10 +57,76 @@ const getLatestPoll = async (_req, res) => {
   res.json({ success: true, poll });
 };
 
+// Add these new functions to your existing poll controller
+
+const getPollHistory = async (_req, res) => {
+  try {
+    // Get unique polls that have results
+    const pipeline = [
+      {
+        $group: {
+          _id: "$pollId",
+          title: { $first: "$title" }, // We'll need to add title to Result model
+          lastCompleted: { $max: "$endedAt" },
+          totalQuestions: { $sum: 1 },
+          participants: { $first: { $size: "$responses" } }
+        }
+      },
+      { $sort: { lastCompleted: -1 } },
+      { $limit: 50 }
+    ];
+
+    const history = await Result.aggregate(pipeline);
+    
+    // Get poll titles from Poll collection
+    const pollIds = history.map(h => h._id);
+    const polls = await Poll.find({ _id: { $in: pollIds } }).lean();
+    
+    const enrichedHistory = history.map(h => {
+      const poll = polls.find(p => p._id.toString() === h._id.toString());
+      return {
+        ...h,
+        title: poll?.title || 'Untitled Poll'
+      };
+    });
+
+    res.json({ success: true, results: enrichedHistory });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+const getHistoryDetails = async (req, res) => {
+  try {
+    const { pollId } = req.params;
+    
+    // Get poll details
+    const poll = await Poll.findById(pollId).lean();
+    if (!poll) {
+      return res.status(404).json({ success: false, message: 'Poll not found' });
+    }
+
+    // Get all results for this poll
+    const results = await Result.find({ pollId }).sort({ endedAt: 1 }).lean();
+    
+    res.json({ 
+      success: true, 
+      poll,
+      results: results
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+// Update your existing exports
 module.exports = {
   createPoll,
   getPolls,
   getPollById,
   getPollResults,
   getLatestPoll,
+  getPollHistory,    
+  getHistoryDetails
 };
+

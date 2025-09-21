@@ -5,11 +5,16 @@ const {
   getPolls,
   getPollById,
   getPollResults,
-  getLatestPoll,    // optional convenience
+  getLatestPoll,
+  getPollHistory,   
+  getHistoryDetails
 } = require('../controllers/poll');
 
 // Convenience: latest created poll
 router.get('/latest', getLatestPoll);
+
+router.get('/history', getPollHistory);
+router.get('/history/:pollId', getHistoryDetails);
 
 // Results (bonus: past results not stored locally)
 router.get('/:pollId/results', getPollResults);
