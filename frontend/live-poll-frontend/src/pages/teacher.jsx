@@ -9,10 +9,11 @@ import RosterPanel from '../components/rosterPanel';
 import ChatWidget from '../components/chatWidget';
 
 export default function Teacher() {
-  const { poll, activeQ, endsAt, counts, startQuestion, setPoll } = usePoll();
+  const { poll, activeQ, endsAt, counts, startQuestion, setPoll, currentQuestion } = usePoll();
   const [compose, setCompose] = useState(!poll); // show form when no poll
 
-  const q = poll?.questions?.[0];
+  // Use currentQuestion if available (for live questions), otherwise use poll question
+  const q = currentQuestion || poll?.questions?.[0];
 
   const openComposer = () => {
     // optional: clear room on the server for a fresh start
@@ -27,7 +28,7 @@ export default function Teacher() {
       <div className="left">
         {compose && <QuestionForm onCreated={() => setCompose(false)} />}
 
-        {!compose && poll && (
+        {!compose && (poll || currentQuestion) && (
           <>
             <h2>Question</h2>
             {activeQ ? (
@@ -36,7 +37,12 @@ export default function Teacher() {
                   <h3>{q?.text}</h3>
                   <Timer endsAt={endsAt} />
                 </div>
-                <ResultsBar options={q?.options} counts={counts} />
+                <ResultsBar 
+                  options={q?.options} 
+                  counts={counts} 
+                  correctIndex={q?.correctIndex}
+                  // Teacher doesn't need myAnswer prop
+                />
                 <p>Wait for the students to answer…</p>
               </>
             ) : (
@@ -44,7 +50,12 @@ export default function Teacher() {
                 <div className="row">
                   <h3>{q?.text}</h3>
                 </div>
-                <ResultsBar options={q?.options} counts={counts} />
+                <ResultsBar 
+                  options={q?.options} 
+                  counts={counts} 
+                  correctIndex={q?.correctIndex}
+                  // Teacher doesn't need myAnswer prop
+                />
                 <div style={{ display:'flex', gap:12, marginTop:12 }}>
                   <button className="primary" onClick={() => startQuestion(q?.qid || q?.id || 'q1')}>
                     Ask this question

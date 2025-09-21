@@ -7,11 +7,16 @@ import ResultsBar from '../components/resultsBar';
 import ChatWidget from '../components/chatWidget';
 
 export default function Student() {
-  const { name, setName, joined, poll, activeQ, endsAt, counts, joinAsStudent } = usePoll();
+  const { name, setName, joined, poll, activeQ, endsAt, counts, joinAsStudent, currentQuestion } = usePoll();
   const [selected, setSelected] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [myAnswer, setMyAnswer] = useState(null); // Track what the student answered
 
-  useEffect(() => { setSubmitted(false); setSelected(null); }, [activeQ]);
+  useEffect(() => { 
+    setSubmitted(false); 
+    setSelected(null); 
+    setMyAnswer(null); // Reset when new question starts
+  }, [activeQ]);
 
   const join = async () => {
     const ack = await joinAsStudent((name || '').trim());
@@ -22,7 +27,7 @@ export default function Student() {
   if (!joined) {
     return (
       <div className="page">
-        <h2>Let’s Get Started</h2>
+        <h2>Let's Get Started</h2>
         <input
           placeholder="Enter your name"
           value={name}
@@ -33,7 +38,7 @@ export default function Student() {
     );
   }
 
-  if (!poll) {
+  if (!poll && !currentQuestion) {
     return (
       <div className="page center">
         <h3>Wait for the teacher to ask questions…</h3>
@@ -41,13 +46,15 @@ export default function Student() {
     );
   }
 
-  const q = poll.questions?.[0];
+  // Use currentQuestion if available, fallback to poll question
+  const q = currentQuestion || poll?.questions?.[0];
 
   const submit = () => {
     if (activeQ == null || selected == null) return;
     socket.emit('student:answer', { questionId: activeQ, optionIndex: selected }, (ack)=>{
       if (!ack?.ok) return alert(ack?.msg || 'Submit failed');
       setSubmitted(true);
+      setMyAnswer(selected); // Remember what they answered
     });
   };
 
@@ -66,16 +73,18 @@ export default function Student() {
               <>
                 <ul className="options">
                   {q?.options?.map((opt,i)=>(
-                    <li key={i}>
-                      <label>
-                        <input
-                          type="radio"
-                          name="opt"
-                          checked={selected===i}
-                          onChange={()=>setSelected(i)}
-                        />
-                        {opt}
-                      </label>
+                    <li key={i} className="option">
+                      <div className="choice">
+                        <label>
+                          <input
+                            type="radio"
+                            name="opt"
+                            checked={selected===i}
+                            onChange={()=>setSelected(i)}
+                          />
+                          {opt}
+                        </label>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -85,14 +94,24 @@ export default function Student() {
               </>
             ) : (
               <>
-                <ResultsBar options={q?.options} counts={counts} />
+                <ResultsBar 
+                  options={q?.options} 
+                  counts={counts} 
+                  correctIndex={q?.correctIndex}
+                  myAnswer={myAnswer}
+                />
                 <p>Wait for the teacher to ask a new question.</p>
               </>
             )}
           </>
         ) : (
           <>
-            <ResultsBar options={q?.options} counts={counts} />
+            <ResultsBar 
+              options={q?.options} 
+              counts={counts} 
+              correctIndex={q?.correctIndex}
+              myAnswer={myAnswer}
+            />
             <p>Wait for the teacher to ask a new question..</p>
           </>
         )}

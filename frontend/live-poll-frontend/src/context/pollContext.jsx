@@ -1,3 +1,4 @@
+// src/context/pollContext.jsx
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import http from '../api/http';
@@ -69,20 +70,38 @@ export default function PollProvider({ children }) {
       setCurrentQuestion(null);
     });
 
-    socket.on('question:started', ({ questionId, text, options, endsAt }) => {
+    socket.on('question:started', ({ questionId, text, options, correctIndex, endsAt }) => {
       setActiveQ(questionId);
       setEndsAt(endsAt);
       setCounts([]); // reset results
       // Keep a local copy so Student can render even if poll isn't ready yet
-      setCurrentQuestion({ qid: questionId, text, options });
+      // Include correctIndex so students can see right/wrong answers after submission
+      setCurrentQuestion({ 
+        qid: questionId, 
+        text, 
+        options,
+        correctIndex: typeof correctIndex === 'number' ? correctIndex : null
+      });
     });
 
-    socket.on('results:update', ({ questionId, counts }) => {
-      setCounts(prev => (questionId === activeQ ? counts : prev));
+    socket.on('results:update', ({ questionId, counts, correctIndex }) => {
+      if (questionId === activeQ) {
+        setCounts(counts);
+        // Update currentQuestion with correctIndex if provided
+        if (typeof correctIndex === 'number') {
+          setCurrentQuestion(prev => prev ? { ...prev, correctIndex } : null);
+        }
+      }
     });
 
-    socket.on('results:final', ({ questionId, counts }) => {
-      if (questionId === activeQ) setCounts(counts);
+    socket.on('results:final', ({ questionId, counts, correctIndex }) => {
+      if (questionId === activeQ) {
+        setCounts(counts);
+        // Make sure correctIndex is available for final results
+        if (typeof correctIndex === 'number') {
+          setCurrentQuestion(prev => prev ? { ...prev, correctIndex } : null);
+        }
+      }
       setActiveQ(null);
       setEndsAt(null);
       // Keep currentQuestion so students still see the bars after the timer

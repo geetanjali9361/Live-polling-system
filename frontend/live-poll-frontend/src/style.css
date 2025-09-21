@@ -1,3 +1,4 @@
+/* Updated styles for better results display */
 body { font-family: ui-sans-serif, system-ui, Arial; margin:0; background:#fafafa; }
 .page { max-width:960px; margin:40px auto; padding:0 16px; }
 .page.center { text-align:center; }
@@ -8,12 +9,6 @@ body { font-family: ui-sans-serif, system-ui, Arial; margin:0; background:#fafaf
 .row { display:flex; align-items:center; gap:12px; justify-content:space-between; }
 .panel { background:#fff; border:1px solid #eee; padding:16px; border-radius:12px; margin:16px 0; }
 .two-col { display:grid; grid-template-columns: 2fr 1fr; gap:16px; }
-.options li, .results li { list-style:none; margin:8px 0; }
-.results { padding:0; }
-.results li { position:relative; background:#eee; border-radius:8px; overflow:hidden; }
-.results .bar { position:absolute; left:0; top:0; bottom:0; background:#6558f5; opacity:.9; }
-.results .label { position:relative; padding:10px 12px; display:inline-block; }
-.results .pct { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-weight:600; }
 .chat { position:sticky; top:16px; background:#fff; border:1px solid #eee; border-radius:12px; display:flex; flex-direction:column; height:420px; }
 .chat-log { flex:1; overflow:auto; padding:10px; display:flex; flex-direction:column; gap:6px; }
 .bubble { padding:8px 10px; border-radius:10px; background:#f1f1ff; max-width:80%; }
@@ -22,10 +17,18 @@ body { font-family: ui-sans-serif, system-ui, Arial; margin:0; background:#fafaf
 .chat-input { display:flex; gap:8px; padding:10px; border-top:1px solid #eee; }
 .right .panel { position:sticky; top:16px; }
 
+/* Options styling */
+.options { 
+  padding: 0; 
+  margin: 0 0 12px 0; 
+  list-style: none;
+}
 
-/* Choice items */
-.options { padding: 0; margin: 0 0 12px 0; }
-.option { list-style: none; margin: 8px 0; }
+.option { 
+  margin: 8px 0; 
+}
+
+/* Regular choice (before submission) */
 .choice {
   display: flex;
   gap: 10px;
@@ -34,51 +37,135 @@ body { font-family: ui-sans-serif, system-ui, Arial; margin:0; background:#fafaf
   border-radius: 10px;
   background: #fff;
   border: 1px solid #e7e7ef;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Frozen review state */
-.option.frozen { pointer-events: none; }
-.option.frozen .pill {
+.choice:hover {
+  border-color: #6558f5;
+  box-shadow: 0 0 0 2px #6558f533;
+}
+
+/* Results pill (after submission) */
+.pill {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px 15px;
   border-radius: 10px;
   background: #f7f7fb;
   border: 1px solid #ececf6;
+  overflow: hidden;
+  min-height: 20px;
 }
 
-/* Correctness colors (stay within your purple theme) */
-.option.frozen.correct .pill,
-.option.frozen.chosen-correct .pill {
-  background: #edeaff;           /* light purple */
-  border-color: #cfc6ff;
+/* Progress bar inside pill */
+.pill .bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: #6558f5;
+  opacity: 0.15;
+  transition: width 0.3s ease;
+  z-index: 1;
 }
 
-.option.frozen.chosen-wrong .pill {
-  background: #fff0f0;           /* light red */
-  border-color: #ffd3d3;
+.pill .label, 
+.pill .pct {
+  position: relative;
+  z-index: 2;
 }
 
-/* Small tags to label "You" / "Correct" */
+.pill .pct {
+  font-weight: 600;
+  color: #666;
+}
+
+/* Tags container */
+.tags {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+}
+
 .tag {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid transparent;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
-.tag.correct { background: #6b5cff; color: #fff; }
-.tag.ok      { background: #6b5cff; color: #fff; }   /* your chosen + correct */
-.tag.you     { background: #ffe5e5; color: #8a0000; }/* your chosen but wrong */
 
-/* add to your styles.css */
-.option.frozen { opacity: .95; }
-.option.frozen.chosen-wrong .pill { background: #ffe5e5; }
-.option.frozen.chosen-correct .pill { background: #e6e1ff; }
-.option.frozen.correct .pill { outline: 2px solid #6558f5; }
-.pill { padding: 10px 12px; border-radius: 10px; background: #f6f6f6; }
-.tag { margin-left: 8px; font-size: 12px; padding: 2px 6px; border-radius: 999px; background: #eee; }
-.tag.ok { background: #e6ffe6; }
-.tag.you { background: #ffe5e5; }
-.tag.correct { background: #ddd7ff; }
+/* Correct answer styling */
+.option.frozen.correct .pill {
+  background: #edeaff;
+  border-color: #cfc6ff;
+  outline: 2px solid #6558f5;
+  outline-offset: 1px;
+}
+
+.option.frozen.correct .pill .bar {
+  background: #6558f5;
+  opacity: 0.2;
+}
+
+.tag.correct {
+  background: #6558f5;
+  color: #fff;
+}
+
+/* Student chose correct answer */
+.option.frozen.chosen-correct .pill {
+  background: #e8f5e8;
+  border-color: #9fdf9f;
+  outline: 2px solid #4caf50;
+  outline-offset: 1px;
+}
+
+.option.frozen.chosen-correct .pill .bar {
+  background: #4caf50;
+  opacity: 0.2;
+}
+
+.tag.ok {
+  background: #4caf50;
+  color: #fff;
+}
+
+/* Student chose wrong answer */
+.option.frozen.chosen-wrong .pill {
+  background: #fff0f0;
+  border-color: #ffc4c4;
+  outline: 2px solid #f44336;
+  outline-offset: 1px;
+}
+
+.option.frozen.chosen-wrong .pill .bar {
+  background: #f44336;
+  opacity: 0.15;
+}
+
+.tag.you {
+  background: #f44336;
+  color: #fff;
+}
+
+/* Frozen state (results shown) */
+.option.frozen {
+  pointer-events: none;
+  opacity: 1;
+}
+
+/* Legacy results styles (for compatibility) */
+.results { padding:0; }
+.results li { list-style:none; margin:8px 0; }
+.results li { position:relative; background:#eee; border-radius:8px; overflow:hidden; }
+.results .bar { position:absolute; left:0; top:0; bottom:0; background:#6558f5; opacity:.9; }
+.results .label { position:relative; padding:10px 12px; display:inline-block; }
+.results .pct { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-weight:600; }

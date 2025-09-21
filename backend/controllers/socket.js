@@ -29,10 +29,10 @@ function normalizeQuestions(questions = []) {
     qid: q.id || q.qid || `q${i+1}`, 
     text: q.text,
     options: q.options || [],
+    correctIndex: typeof q.correctIndex === 'number' ? q.correctIndex : undefined,
     timeLimitSec: typeof q.timeLimitSec === 'number' ? q.timeLimitSec : 60
   }));
 }
-
 
 function handleSocket(io, socket) {
   if (!ioRef) ioRef = io;
@@ -118,7 +118,14 @@ function handleSocket(io, socket) {
     const limit = q.timeLimitSec ?? 60;
     endsAt = Date.now() + limit * 1000;
 
-    io.emit('question:started', { questionId: qid, text: q.text, options: q.options, endsAt });
+    // Send question with correctIndex for students to know the right answer after submission
+    io.emit('question:started', { 
+      questionId: qid, 
+      text: q.text, 
+      options: q.options, 
+      correctIndex: q.correctIndex, // Include correct answer
+      endsAt 
+    });
 
     timer = setTimeout(() => finalizeQuestion(io, q), limit * 1000);
     ack?.({ ok: true });
@@ -139,8 +146,15 @@ function handleSocket(io, socket) {
 
     const q = poll.questions.find(x => (x.qid || x.id) === questionId);
     const counts = tallyCounts(q, qMap);
-    io.emit('results:update', { questionId, counts });
+    
+    // Send updated results with correct answer info
+    io.emit('results:update', { 
+      questionId, 
+      counts,
+      correctIndex: q.correctIndex 
+    });
 
+    // Auto-end if all students answered
     if (students.size > 0 && qMap.size >= students.size) {
       clearTimeout(timer);
       finalizeQuestion(io, q);
@@ -193,6 +207,7 @@ async function finalizeQuestion(io, question) {
         qid,
         questionText: question.text,
         options: question.options,
+        correctIndex: question.correctIndex,
         counts,
         responses: [...qMap.entries()].map(([studentName, optionIndex]) => ({ studentName, optionIndex })),
         endedAt: new Date()
@@ -202,7 +217,13 @@ async function finalizeQuestion(io, question) {
     console.error('Result save failed:', e.message);
   }
 
-  io.emit('results:final', { questionId: qid, counts });
+  // Send final results with correct answer
+  io.emit('results:final', { 
+    questionId: qid, 
+    counts,
+    correctIndex: question.correctIndex 
+  });
+  
   responses.delete(qid);
   currentQuestionId = null;
   endsAt = null;
