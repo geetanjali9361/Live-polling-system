@@ -46,126 +46,120 @@ body { font-family: ui-sans-serif, system-ui, Arial; margin:0; background:#fafaf
   box-shadow: 0 0 0 2px #6558f533;
 }
 
-/* Results pill (after submission) */
-.pill {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 12px 15px;
-  border-radius: 10px;
-  background: #f7f7fb;
-  border: 1px solid #ececf6;
-  overflow: hidden;
-  min-height: 20px;
+/* Results bars - updated to work with new component */
+.results { 
+  padding: 0; 
+  margin: 0 0 12px 0;
+  list-style: none;
 }
 
-/* Progress bar inside pill */
-.pill .bar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background: #6558f5;
-  opacity: 0.15;
+.result-item { 
+  position: relative; 
+  background: #eee; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  margin: 8px 0;
+  list-style: none;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.bar { 
+  position: absolute; 
+  left: 0; 
+  top: 0; 
+  bottom: 0; 
+  background: #6558f5; 
+  opacity: 0.9;
   transition: width 0.3s ease;
-  z-index: 1;
 }
 
-.pill .label, 
-.pill .pct {
-  position: relative;
+/* Green bar for correct answers */
+.bar-green { 
+  background: #4caf50 !important; 
+  opacity: 0.9 !important;
+}
+
+/* Red bar for wrong answers */
+.bar-red { 
+  background: #f44336 !important; 
+  opacity: 0.7 !important;
+}
+
+.label { 
+  position: relative; 
+  padding: 10px 12px; 
+  display: inline-block;
+  font-weight: 500;
   z-index: 2;
+  color: #333;
 }
 
-.pill .pct {
+.pct { 
+  position: absolute; 
+  right: 85px; 
+  top: 50%; 
+  transform: translateY(-50%); 
   font-weight: 600;
-  color: #666;
-}
-
-/* Tags container */
-.tags {
-  display: flex;
-  gap: 6px;
-  align-items: center;
   z-index: 2;
-  position: relative;
+  color: #333;
 }
 
-.tag {
-  font-size: 11px;
-  padding: 3px 8px;
+.status-badge {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
   border-radius: 12px;
-  font-weight: 600;
+  z-index: 2;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  color: white;
 }
 
-/* Correct answer styling */
-.option.frozen.correct .pill {
-  background: #edeaff;
-  border-color: #cfc6ff;
-  outline: 2px solid #6558f5;
-  outline-offset: 1px;
-}
-
-.option.frozen.correct .pill .bar {
-  background: #6558f5;
-  opacity: 0.2;
-}
-
-.tag.correct {
-  background: #6558f5;
-  color: #fff;
-}
-
-/* Student chose correct answer */
-.option.frozen.chosen-correct .pill {
-  background: #e8f5e8;
-  border-color: #9fdf9f;
-  outline: 2px solid #4caf50;
-  outline-offset: 1px;
-}
-
-.option.frozen.chosen-correct .pill .bar {
+/* Status badge colors */
+.correct-answer .status-badge {
   background: #4caf50;
-  opacity: 0.2;
 }
 
-.tag.ok {
-  background: #4caf50;
-  color: #fff;
-}
-
-/* Student chose wrong answer */
-.option.frozen.chosen-wrong .pill {
-  background: #fff0f0;
-  border-color: #ffc4c4;
-  outline: 2px solid #f44336;
-  outline-offset: 1px;
-}
-
-.option.frozen.chosen-wrong .pill .bar {
+.wrong-answer .status-badge {
   background: #f44336;
-  opacity: 0.15;
 }
 
-.tag.you {
-  background: #f44336;
-  color: #fff;
+/* Legacy compatibility - keeping for backup */
+.results li { 
+  position: relative; 
+  background: #eee; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  margin: 8px 0;
+  list-style: none;
+  min-height: 40px;
 }
 
-/* Frozen state (results shown) */
-.option.frozen {
-  pointer-events: none;
-  opacity: 1;
+.results .bar { 
+  position: absolute; 
+  left: 0; 
+  top: 0; 
+  bottom: 0; 
+  background: #6558f5; 
+  opacity: .9; 
 }
 
-/* Legacy results styles (for compatibility) */
-.results { padding:0; }
-.results li { list-style:none; margin:8px 0; }
-.results li { position:relative; background:#eee; border-radius:8px; overflow:hidden; }
-.results .bar { position:absolute; left:0; top:0; bottom:0; background:#6558f5; opacity:.9; }
-.results .label { position:relative; padding:10px 12px; display:inline-block; }
-.results .pct { position:absolute; right:8px; top:50%; transform:translateY(-50%); font-weight:600; }
+.results .label { 
+  position: relative; 
+  padding: 10px 12px; 
+  display: inline-block; 
+}
+
+.results .pct { 
+  position: absolute; 
+  right: 8px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  font-weight: 600; 
+}

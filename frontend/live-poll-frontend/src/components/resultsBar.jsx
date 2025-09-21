@@ -10,7 +10,7 @@ export default function ResultsBar({
   const total = counts.reduce((a,b)=>a+b,0) || 1;
   
   return (
-    <ul className="options">
+    <ul className="results">
       {options.map((opt,i)=>{
         const pct = Math.round(100 * (counts[i]||0) / total);
         const isCorrect = correctIndex !== null && i === correctIndex;
@@ -18,36 +18,31 @@ export default function ResultsBar({
         const isMyCorrectAnswer = isMyAnswer && isCorrect;
         const isMyWrongAnswer = isMyAnswer && !isCorrect;
         
-        // Determine the CSS classes
-        let optionClass = "option frozen";
+        // Determine bar color and class
+        let barClass = "bar";
+        let listClass = "result-item";
+        let statusText = "";
+        
         if (isMyCorrectAnswer) {
-          optionClass += " chosen-correct";
+          barClass = "bar bar-green";
+          listClass = "result-item correct-answer";
+          statusText = "CORRECT";
         } else if (isMyWrongAnswer) {
-          optionClass += " chosen-wrong";
+          barClass = "bar bar-red";
+          listClass = "result-item wrong-answer";
+          statusText = "WRONG";
         } else if (isCorrect) {
-          optionClass += " correct";
+          barClass = "bar bar-green";
+          listClass = "result-item correct-answer";
+          statusText = "CORRECT";
         }
         
         return (
-          <li key={i} className={optionClass}>
-            <div className="pill">
-              <div className="bar" style={{ width: `${pct}%` }} />
-              <span className="label">{opt}</span>
-              <span className="pct">{pct}%</span>
-              
-              {/* Show tags for correct answer and user's choice */}
-              <div className="tags">
-                {isCorrect && correctIndex !== null && (
-                  <span className="tag correct">Correct</span>
-                )}
-                {isMyCorrectAnswer && (
-                  <span className="tag ok">You ✓</span>
-                )}
-                {isMyWrongAnswer && (
-                  <span className="tag you">You</span>
-                )}
-              </div>
-            </div>
+          <li key={i} className={listClass}>
+            <div className={barClass} style={{ width: `${pct}%` }} />
+            <span className="label">{opt}</span>
+            <span className="pct">{pct}%</span>
+            {statusText && <span className="status-badge">{statusText}</span>}
           </li>
         );
       })}
