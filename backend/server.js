@@ -38,6 +38,12 @@ const { connectDB } = require('./db');
     //const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
 
    app.use(cors({ origin: FRONTEND }));
+   const allowed = [
+  'http://localhost:5173',
+  'https://live-polling-system-plum.vercel.app'   // replace with your actual Vercel domain
+];
+
+app.use(cors({ origin: allowed, credentials: true }));
     app.use(express.json());
 
     app.get('/health', (_req, res) => res.json({ ok: true }));
