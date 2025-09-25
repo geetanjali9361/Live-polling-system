@@ -11,10 +11,9 @@ export default function RoleSelect({ onContinue }) {
     <div className="page role-select-page">
       <div className="role-select-content">
         <div className="disclaimer">
-  ⚠️ Note: The backend is hosted on Render (free tier). 
-  The first request after inactivity may take ~15s as the server wakes up. 
-  (Hosting limitation, not a code issue.)
+  ⚠️ Note: The backend is hosted on Render (free tier). If the project is inactive for 15 minutes, the server goes to sleep — so the first request may take ~15s to wake up. After that, everything works smoothly. This delay is only due to free render hosting limits, not the code.
 </div>
+<br />
         <div className="header-badge">Interactive Poll</div>
         
         <h1>Welcome to the <strong>Live Polling System</strong></h1>
