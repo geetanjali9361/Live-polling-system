@@ -1144,3 +1144,10 @@ h3 {
 .tabbed-sidebar .tab-headers {
   display: none; /* Hide tabs since we only show participants now */
 }
+
+.disclaimer {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #777;
+  text-align: center;
+}

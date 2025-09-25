@@ -6,8 +6,15 @@ export default function RoleSelect({ onContinue }) {
   const [tempRole, setTempRole] = useState('student');
 
   return (
+
+    
     <div className="page role-select-page">
       <div className="role-select-content">
+        <div className="disclaimer">
+  ⚠️ Note: The backend is hosted on Render (free tier). 
+  The first request after inactivity may take ~15s as the server wakes up. 
+  (Hosting limitation, not a code issue.)
+</div>
         <div className="header-badge">Interactive Poll</div>
         
         <h1>Welcome to the <strong>Live Polling System</strong></h1>
