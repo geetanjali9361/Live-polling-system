@@ -3,6 +3,8 @@
 A real-time polling application built with **React (Vite)** on the frontend and **Node.js + Socket.IO** on the backend.  
 It allows a teacher to create polls, ask questions, and see results in real-time while students can join, vote, and view correctness feedback.
 
+Deployed backend on Render (free tier) — the first request may take ~15s due to the server waking up (a hosting limitation, not a code issue).
+
 ---
 
 ## ✨ Features

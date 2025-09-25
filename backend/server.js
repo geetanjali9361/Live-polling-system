@@ -1,7 +1,8 @@
 // server.js
 require('dotenv').config();
 
-const express = require('express');
+const express = require('express'); 
+const app = express();
 const http = require('http');
 const cors = require('cors');
 const { Server } = require('socket.io');
@@ -26,13 +27,12 @@ const { connectDB } = require('./db');
     const host = uri.split('@')[1]?.split('/')[0];
     console.log('Using MONGO_URI host:', host || '(none)');
     if (!uri) {
-      console.warn('⚠️  MONGO_URI not set – continuing without persistence');
+      console.warn(' MONGO_URI not set – continuing without persistence');
     } else {
-      await connectDB(uri); // ensure db/index.js sets { dbName: 'livepoll' } if no path in URI
+      await connectDB(uri); 
     }
 
-    // ---- Express ----
-    const app = express();
+
     const FRONTEND = process.env.FRONTEND_URL?.split(',') ?? ['http://localhost:5173'];
 
     //const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:5173';
@@ -40,7 +40,7 @@ const { connectDB } = require('./db');
    app.use(cors({ origin: FRONTEND }));
    const allowed = [
   'http://localhost:5173',
-  'https://live-polling-system-plum.vercel.app'   // replace with your actual Vercel domain
+  'https://live-polling-system-plum.vercel.app'   
 ];
 
 app.use(cors({ origin: allowed, credentials: true }));
@@ -61,9 +61,9 @@ app.use(cors({ origin: allowed, credentials: true }));
     if (!PORT) throw new Error('PORT is required in config file');
 
     server.listen(PORT, () => {
-      console.log(`✅ Server running on http://localhost:${PORT}`);
-      if (uri) console.log('✅ MongoDB ready');
-      console.log(`✅ CORS allowed: ${FRONTEND}`);
+      console.log(`Server running on http://localhost:${PORT}`);
+      if (uri) console.log('MongoDB ready');
+      console.log(`CORS allowed: ${FRONTEND}`);
     });
   } catch (err) {
     console.error('Startup error:', err.message);
