@@ -1146,8 +1146,13 @@ h3 {
 }
 
 .disclaimer {
-  margin-top: 1rem;
-  font-size: 0.90rem;
-  color: #700202;
+  margin: 0.5rem 0 1rem;
+  font-size: 0.9rem;
+  color: #555;          /* softer gray */
   text-align: center;
+}
+
+.disclaimer .icon {
+  color: #f59e0b;       /* Tailwind amber-500 */
+  margin-right: 6px;
 }
